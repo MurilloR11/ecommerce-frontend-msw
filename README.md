@@ -1,29 +1,25 @@
-<<<<<<< HEAD
 # 📊 E-commerce Admin Dashboard — Datos a Escala
 
 <!-- Añadir GIF/Screenshot aquí -->
-=======
 # 🛒 Ecommerce Frontend — Data at Scale
 
 > Una interfaz de e-commerce construida para demostrar que el frontend puede manejar catálogos y datos a gran escala sin sacrificar rendimiento, mantenibilidad ni calidad de código.
->>>>>>> a6217425d705db330ca33e513b495d3d6cade527
+
 
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
-<<<<<<< HEAD
-=======
 [![ESLint](https://img.shields.io/badge/ESLint-strict--type--checked-4B32C3?logo=eslint&logoColor=white)](https://eslint.org/)
 [![Prettier](https://img.shields.io/badge/code_style-Prettier-F7B93E?logo=prettier&logoColor=black)](https://prettier.io/)
 [![Architecture](https://img.shields.io/badge/Architecture-Feature--Sliced_Design-orange)](https://feature-sliced.design/)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey)](#)
->>>>>>> a6217425d705db330ca33e513b495d3d6cade527
+
 
 ---
 
 ## 📖 Descripción
 
-<<<<<<< HEAD
+
 Este proyecto **no es un storefront**. No hay carrito, no hay checkout, no hay login de cliente final. Es un **panel de administración** orientado a la operación diaria de un e-commerce: visualizar, filtrar y gestionar órdenes (`orders`) en tablas densas.
 
 El reto técnico real no es pintar componentes bonitos: es demostrar que una tabla con **más de 5,000 filas**, filtros combinados y navegación por URL puede mantenerse **fluida a 60fps** sin que el navegador se congele, aplicando técnicas profesionales de optimización frontend.
@@ -44,7 +40,6 @@ Estos son los verdaderos diferenciadores del proyecto, no una lista de features 
 | **Filtros e histórico sincronizados con la URL** | El estado de filtros (`filter-orders`) vive en los query params, no en memoria volátil. La URL es el estado — compartible, recargable, con historial de navegador funcional. |
 | **Paginación estricta en el servidor** | El cliente jamás descarga el dataset completo para paginar/filtrar localmente. Cada cambio de página o filtro dispara una nueva petición con sus propios parámetros. |
 | **Diseño para el fallo** | Todo endpoint puede tardar, fallar o devolver vacío. La UI contempla explícitamente estados de *loading* (skeletons), error de red y respuesta vacía — no solo el "happy path". |
-=======
 Este proyecto es una prueba de concepto de e-commerce cuyo objetivo **no** es solo mostrar productos en pantalla, sino demostrar que una interfaz de usuario puede **escalar en volumen de datos** (catálogos extensos, listados, filtros, estado compartido) **sin romperse ni degradarse** a medida que el proyecto crece.
 
 Para lograrlo, el proyecto se apoya en tres pilares:
@@ -66,7 +61,7 @@ Para lograrlo, el proyecto se apoya en tres pilares:
 - 🎨 **Prettier** como formateador único, sin conflictos con ESLint (`eslint-config-prettier`).
 - 🎯 **CSS puro**, sin frameworks de estilos: control total sobre el bundle final.
 - 🔐 **Gestión segura de variables de entorno** vía `.env` + validación en runtime (`shared/config/env.ts`).
->>>>>>> a6217425d705db330ca33e513b495d3d6cade527
+
 
 ---
 
@@ -74,7 +69,7 @@ Para lograrlo, el proyecto se apoya en tres pilares:
 
 ### ¿Por qué Feature-Sliced Design?
 
-<<<<<<< HEAD
+
 Un panel de administración crece por **dominios de datos** (órdenes, productos, usuarios, métricas), no por tipos de archivo. Organizar por tipo (`components/`, `hooks/`, `services/`) hace que cada nueva vista toque decenas de carpetas y aumente el acoplamiento entre dominios que no deberían conocerse entre sí.
 
 FSD organiza el código en capas con una regla de dependencia estricta:
@@ -82,13 +77,13 @@ FSD organiza el código en capas con una regla de dependencia estricta:
 A medida que un catálogo de e-commerce crece (productos, carrito, checkout, usuario, promociones...), organizar el código **por tipo de archivo** (`components/`, `hooks/`, `services/`) hace que cada nueva feature toque decenas de carpetas distintas y aumente el acoplamiento.
 
 FSD organiza el código **por capas de responsabilidad y por dominio de negocio**, con una regla de dependencia estricta: una capa solo puede importar de las capas inferiores.
->>>>>>> a6217425d705db330ca33e513b495d3d6cade527
+
 
 ```
 app  →  pages  →  widgets  →  features  →  entities  →  shared
 ```
 
-<<<<<<< HEAD
+
 Una capa solo puede importar de las capas inferiores. `entities/order` (el modelo de negocio "orden") nunca depende de `features/filter-orders`; `shared` no sabe nada del dominio del negocio. Cada slice expone su API pública a través de un único `index.ts`.
 
 ### Árbol de carpetas (arquitectura objetivo)
@@ -163,7 +158,7 @@ src/
 ```
 
 > Regla de oro: nunca importar directamente desde dentro de otro slice (`features/auth/ui/LoginForm`); siempre a través de su `index.ts` público (`features/auth`).
->>>>>>> a6217425d705db330ca33e513b495d3d6cade527
+
 
 ---
 
@@ -197,7 +192,7 @@ La aplicación quedará disponible en `http://localhost:5173`.
 
 ## ✅ Calidad de código
 
-<<<<<<< HEAD
+
 Tolerancia cero a errores de tipado y de lint. Ningún cambio debería mergearse sin pasar estas verificaciones:
 
 | Comando | Descripción |
@@ -208,7 +203,7 @@ Tolerancia cero a errores de tipado y de lint. Ningún cambio debería mergearse
 | `npm run build` | Build de producción (incluye `typecheck` + `vite build`) |
 
 **Estándares aplicados:** TypeScript `strict: true` + `noUncheckedIndexedAccess`, `noImplicitReturns`, `noUnusedLocals`, `noUnusedParameters` · ESLint (`typescript-eslint`) en modo `strictTypeChecked` + `stylisticTypeChecked` · Prettier como única fuente de verdad para el formato.
-=======
+
 Este proyecto tiene tolerancia cero a errores de tipado y de lint. Ningún cambio debería mergearse sin pasar estas verificaciones:
 
 | Comando               | Descripción                                                        |
@@ -224,13 +219,13 @@ Este proyecto tiene tolerancia cero a errores de tipado y de lint. Ningún cambi
 - ESLint con `typescript-eslint` en modo `strictTypeChecked` y `stylisticTypeChecked` (linting con información de tipos, no solo sintáctico).
 - Reglas de `react-hooks` y `react-refresh` para prevenir bugs comunes de React.
 - Prettier como única fuente de verdad para el formato (sin reglas de estilo duplicadas en ESLint).
->>>>>>> a6217425d705db330ca33e513b495d3d6cade527
+
 
 ---
 
 ## 🔑 Variables de entorno
 
-<<<<<<< HEAD
+
 Todas las variables expuestas al cliente **deben** tener el prefijo `VITE_` — cualquier otra variable no estará disponible en el código del navegador.
 
 ```bash
@@ -294,13 +289,13 @@ El proyecto usa variables de entorno gestionadas por Vite. Todas las variables e
    ```
 
 > ⚠️ Nunca subas el archivo `.env` al repositorio ni guardes secretos con prefijo `VITE_` — todo lo que pase por el build queda expuesto en el bundle del cliente. `.env` ya está excluido en `.gitignore`.
->>>>>>> a6217425d705db330ca33e513b495d3d6cade527
+
 
 ---
 
 ## 🧰 Stack técnico
 
-<<<<<<< HEAD
+
 | Categoría | Tecnología |
 | --- | --- |
 | Framework | React 19 |
@@ -321,4 +316,4 @@ El proyecto usa variables de entorno gestionadas por Vite. Todas las variables e
 | Arquitectura         | Feature-Sliced Design                                                |
 | Linter                | ESLint (`typescript-eslint` strict + type-checked)                  |
 | Formateador           | Prettier                                                             |
->>>>>>> a6217425d705db330ca33e513b495d3d6cade527
+
