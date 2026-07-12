@@ -1,0 +1,19 @@
+.btn {
+  border-radius: 8px;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.btn--primary {
+  background-color: #1a1a1a;
+  color: #fff;
+}
+
+.btn--secondary {
+  background-color: transparent;
+  border-color: #1a1a1a;
+}
