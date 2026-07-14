@@ -1,0 +1,414 @@
+/**
+ * @module      Design Tokens
+ * @layer-model Primitives -> Context -> Semantic
+ * @location    src/shared/styles/tokens.css
+ *
+ * Taxonomy
+ * --------
+ * 1. PRIMITIVES — raw, context-free values (hex colors, px scales, raw font
+ *                 stacks). No meaning attached, never consumed by components.
+ * 2. CONTEXT    — the theme-resolution layer. Every token that must differ
+ *                 between light and dark is declared EXACTLY ONCE here using
+ *                 the native `light-dark(light, dark)` function. There is no
+ *                 second place where a dark value can be written, so the
+ *                 double-source-of-truth defect from the previous revision
+ *                 is now structurally impossible, not just avoided by
+ *                 convention.
+ * 3. SEMANTIC   — purpose-driven aliases ("what is this FOR") consumed by
+ *                 components. They resolve to context tokens (if the value
+ *                 is theme-dependent) or straight to primitives (if it is
+ *                 theme-invariant, e.g. spacing, radius, --accent-base).
+ *
+ * Theming activation
+ * -------------------
+ * `light-dark()` resolves against the computed `color-scheme` of the
+ * element, not against a selector match. So instead of duplicating a whole
+ * palette block per trigger, each trigger only has to flip ONE property:
+ *
+ *   :root                 { color-scheme: light dark; }  -- follow the OS by default
+ *   :root.theme-light      { color-scheme: light;      }  -- explicit user override
+ *   :root.theme-dark       { color-scheme: dark;       }  -- explicit user override
+ *
+ * Flipping `color-scheme` re-resolves every `light-dark()` call in the
+ * cascade simultaneously. Adding a new themed token later means adding one
+ * line to the CONTEXT layer — there is nothing to keep in sync across two
+ * rule bodies.
+ */
+
+/* ==========================================================================
+   LAYER 1 — PRIMITIVES
+   ========================================================================== */
+
+:root {
+  /**
+   * @group   Color / Neutrals (light palette)
+   * @intent  Cool, sophisticated gray-slate scale (GitHub-inspired) used to
+   *          build light-theme surfaces, borders and text.
+   */
+  --color-white: #ffffff;
+  --color-slate-50: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-700: #334155;
+  --color-slate-900: #0f172a;
+
+  /**
+   * @group   Color / Neutrals (dark palette)
+   * @intent  Deep blue-gray scale used to build dark-theme surfaces,
+   *          borders and text. Bespoke tonal steps (not computed from the
+   *          light scale) to avoid muddy contrast.
+   */
+  --color-navy-950: #0b0f19;
+  --color-gray-900: #111827;
+  --color-gray-800: #1f2937;
+  --color-gray-700: #374151;
+  --color-gray-400: #9ca3af;
+  --color-gray-100: #f3f4f6;
+
+  /**
+   * @group   Color / Accent
+   * @intent  Vibrant electric blue used for interactive elements (links,
+   *          primary actions, focus). `--color-sky-600` is the single knob
+   *          for a full app re-skin: it feeds --accent-base AND, via
+   *          relative color syntax, --focus-ring, with zero duplication.
+   *          The two hover steps are separate primitives because a hover
+   *          tone is a deliberate per-theme design decision, not a
+   *          mechanical derivation of the base.
+   */
+  --color-sky-600: #0284c7;
+  --color-sky-700: #0369a1;
+  --color-sky-900: #0c4a6e;
+
+  /**
+   * @group   Color / Status ramps (order lifecycle, Sprint 0.2)
+   * @intent  Six business statuses. The soft (100) and deep (900) hex steps
+   *          are LIGHT-MODE-ONLY primitives: a curated, hand-tuned pastel
+   *          tint and a deep ink, used exactly as authored (never alpha-
+   *          blended) to build the light badge (soft bg + deep text).
+   *
+   *          The vivid step is stored as bare RGB channels (`R, G, B`, no
+   *          `rgb()` wrapper) instead of a flat hex. A channel primitive is
+   *          the only representation that lets the CONTEXT layer derive
+   *          BOTH an opaque color (`rgb(var(--p-x-rgb))`, used for the
+   *          theme-invariant marker dot and for dark-mode text) AND a
+   *          translucent tint (`rgba(var(--p-x-rgb), 0.12)`, used for
+   *          dark-mode badge backgrounds) from one single value — see the
+   *          dark-mode override rationale in the CONTEXT layer below.
+   *
+   *          Hues are spread across the wheel so no two families are
+   *          mistakable at a glance: shipped (violet, ~hue 272) vs
+   *          delivered (green, ~hue 142); refunded (dusty rose, ~hue 341)
+   *          vs cancelled (pure red, ~hue 0).
+   *
+   *          WCAG note: the contrast that matters for dark-mode text is
+   *          against its OWN badge background, not the raw page surface —
+   *          the 12%-alpha tint (see CONTEXT layer) lifts the effective
+   *          background luminance measurably for the brighter hues, which
+   *          silently erodes the ratio. Checked against that composited
+   *          background (`text vivid` over `12% vivid + #111827 panel`),
+   *          three swatches needed a one-notch lift over a "pure" 500 to
+   *          clear the 4.5:1 floor: violet 4.55->5.14, red 4.24->4.88 and
+   *          rose 4.61->5.19. Pending/paid/delivered already cleared 5.9+
+   *          at their original swatch and were left untouched.
+   */
+  --color-amber-100: #fef3c7;
+  --p-amber-rgb: 245, 158, 11;
+  --color-amber-900: #78350f;
+
+  --color-teal-100: #ccfbf1;
+  --p-teal-rgb: 20, 184, 166;
+  --color-teal-900: #134e4a;
+
+  --color-violet-100: #f3e8ff;
+  --p-violet-rgb: 190, 120, 249;
+  --color-violet-900: #581c87;
+
+  --color-green-100: #dcfce7;
+  --p-green-rgb: 34, 197, 94;
+  --color-green-900: #14532d;
+
+  --color-red-100: #fee2e2;
+  --p-red-rgb: 244, 94, 94;
+  --color-red-900: #7f1d1d;
+
+  --color-rose-100: #fbe6ef;
+  --p-rose-rgb: 212, 125, 161;
+  --color-rose-900: #5c1f3d;
+
+  /**
+   * @group   Spacing scale
+   * @intent  Physical 4px/8px multiplier scale. Nothing in the app should
+   *          hardcode a px gap outside of this ramp.
+   */
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --space-32: 32px;
+
+  /**
+   * @group   Typography / font family
+   * @intent  Native OS font stack — zero network cost, instant render.
+   */
+  --font-family-system: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /** @group Typography / font weight */
+  --font-weight-400: 400;
+  --font-weight-500: 500;
+  --font-weight-700: 700;
+
+  /**
+   * @group   Typography / font size
+   * @intent  rem-based scale (root = 16px) covering the H1 -> Caption range.
+   */
+  --font-size-12: 0.75rem;
+  --font-size-14: 0.875rem;
+  --font-size-16: 1rem;
+  --font-size-20: 1.25rem;
+  --font-size-28: 1.75rem;
+
+  /**
+   * @group   Radius scale
+   * @intent  Rounded, modern personality. `--radius-9999` is the pill/circle
+   *          escape hatch for badges and avatars.
+   */
+  --radius-4: 4px;
+  --radius-8: 8px;
+  --radius-12: 12px;
+  --radius-9999: 9999px;
+}
+
+/* ==========================================================================
+   LAYER 2 — CONTEXT (single source of truth for theme-dependent values)
+   --------------------------------------------------------------------------
+   Every token in this block is written once. `light-dark()` picks the
+   matching branch from the element's resolved `color-scheme` (see the
+   activation rules at the bottom of the file) — no selector duplication,
+   no risk of the two branches drifting apart.
+   ========================================================================== */
+
+:root {
+  /** @group Context / Surface — page canvas vs. raised panels */
+  --ctx-surface-app: light-dark(var(--color-slate-50), var(--color-navy-950));
+  --ctx-surface-panel: light-dark(var(--color-white), var(--color-gray-900));
+
+  /** @group Context / Border — subtle separators vs. strong boundaries */
+  --ctx-border-subtle: light-dark(var(--color-slate-200), var(--color-gray-800));
+  --ctx-border-strong: light-dark(var(--color-slate-300), var(--color-gray-700));
+
+  /** @group Context / Text — primary content vs. de-emphasized copy */
+  --ctx-text-primary: light-dark(var(--color-slate-900), var(--color-gray-100));
+  --ctx-text-secondary: light-dark(var(--color-slate-700), var(--color-gray-400));
+
+  /**
+   * @group   Context / Accent hover
+   * @intent  Only the hover step is theme-dependent (the base and the
+   *          on-accent foreground are visually identical day and night, so
+   *          they live as plain primitives in the SEMANTIC layer instead —
+   *          see the acceptance criterion in the review: a token that never
+   *          changes value must not appear in the theme-resolution layer).
+   */
+  --ctx-accent-hover: light-dark(var(--color-sky-700), var(--color-sky-900));
+
+  /**
+   * @group   Context / Status badges (6 order states)
+   * @intent  Two different strategies per theme, on purpose:
+   *
+   *          LIGHT reads as paper: opaque soft-tint background (100 step)
+   *          plus opaque deep ink text (900 step) — a Stripe-style flat
+   *          badge with no transparency involved.
+   *
+   *          DARK reads as a whisper, not an alarm. A flat 900-tone
+   *          background (the previous approach) is a saturated color
+   *          covering the badge's full area; across a table with thousands
+   *          of rows that many solid, fluorescent rectangles overwhelm the
+   *          data they are meant to annotate. Instead, dark composites the
+   *          SAME vivid channel twice at two different alpha values: the
+   *          text is that channel fully opaque (legible, saturated), while
+   *          the background is the identical channel diluted to 0.12 alpha
+   *          — a monochromatic tint of the surface it sits on, not a block
+   *          of color competing with it. Because bg and text share one
+   *          hue, the badge still reads as a single coherent chip; because
+   *          the background is 88% surface, it recedes into the row
+   *          instead of dominating it. This is the GitHub/Linear "subtle
+   *          badge" recipe, and it is only possible because the vivid step
+   *          is stored as raw channels (see the primitive layer above).
+   */
+  --ctx-status-pending-bg: light-dark(var(--color-amber-100), rgba(var(--p-amber-rgb), 0.12));
+  --ctx-status-pending-text: light-dark(var(--color-amber-900), rgb(var(--p-amber-rgb)));
+
+  --ctx-status-paid-bg: light-dark(var(--color-teal-100), rgba(var(--p-teal-rgb), 0.12));
+  --ctx-status-paid-text: light-dark(var(--color-teal-900), rgb(var(--p-teal-rgb)));
+
+  --ctx-status-shipped-bg: light-dark(var(--color-violet-100), rgba(var(--p-violet-rgb), 0.12));
+  --ctx-status-shipped-text: light-dark(var(--color-violet-900), rgb(var(--p-violet-rgb)));
+
+  --ctx-status-delivered-bg: light-dark(var(--color-green-100), rgba(var(--p-green-rgb), 0.12));
+  --ctx-status-delivered-text: light-dark(var(--color-green-900), rgb(var(--p-green-rgb)));
+
+  --ctx-status-cancelled-bg: light-dark(var(--color-red-100), rgba(var(--p-red-rgb), 0.12));
+  --ctx-status-cancelled-text: light-dark(var(--color-red-900), rgb(var(--p-red-rgb)));
+
+  --ctx-status-refunded-bg: light-dark(var(--color-rose-100), rgba(var(--p-rose-rgb), 0.12));
+  --ctx-status-refunded-text: light-dark(var(--color-rose-900), rgb(var(--p-rose-rgb)));
+
+  /**
+   * @group   Context / Elevation
+   * @intent  Only the shadow's color stop changes between themes: light
+   *          uses a soft ink tint, dark fades the same recipe to fully
+   *          transparent black for `card` (visually identical to `none`,
+   *          without branching the shadow's structural shape) and to a
+   *          pure, muted black for `overlay` so modals stay legible
+   *          without the smudged look colored shadows get on dark surfaces.
+   */
+  --ctx-shadow-card: 0 1px 2px light-dark(rgba(15, 23, 42, 0.06), rgba(0, 0, 0, 0)),
+    0 1px 3px light-dark(rgba(15, 23, 42, 0.1), rgba(0, 0, 0, 0));
+  --ctx-shadow-overlay: 0 12px 16px -4px light-dark(rgba(15, 23, 42, 0.18), rgba(0, 0, 0, 0.55)),
+    0 4px 6px -2px light-dark(rgba(15, 23, 42, 0.1), rgba(0, 0, 0, 0.35));
+}
+
+/* ==========================================================================
+   LAYER 3 — SEMANTIC (public, component-facing vocabulary)
+   ========================================================================== */
+
+:root {
+  /** @group Surface */
+  --surface-bg-app: var(--ctx-surface-app);
+  --surface-bg-panel: var(--ctx-surface-panel);
+
+  /** @group Border */
+  --border-subtle: var(--ctx-border-subtle);
+  --border-strong: var(--ctx-border-strong);
+
+  /** @group Text */
+  --text-primary: var(--ctx-text-primary);
+  --text-secondary: var(--ctx-text-secondary);
+
+  /**
+   * @group   Accent (interaction)
+   * @intent  `--accent-base` and `--accent-fg` are theme-invariant, so they
+   *          resolve straight to primitives — changing the whole app's
+   *          accent is a one-line edit to `--color-sky-600` above. Only
+   *          `--accent-hover` reads from the CONTEXT layer.
+   */
+  --accent-base: var(--color-sky-600);
+  --accent-hover: var(--ctx-accent-hover);
+  --accent-fg: var(--color-white);
+
+  /**
+   * @group   Focus ring (Sprint 1.3 accessibility requirement)
+   * @intent  Derived from `--color-sky-600` via relative color syntax
+   *          instead of a hand-picked rgba literal, so it re-skins for
+   *          free alongside the accent instead of drifting out of sync.
+   *          Kept theme-invariant: a visible ring needs to read the same
+   *          regardless of surface.
+   */
+  --focus-ring-color: rgb(from var(--color-sky-600) r g b / 40%);
+  --focus-ring: 0 0 0 3px var(--focus-ring-color);
+
+  /**
+   * @group   Status — order badges (6 lifecycle states)
+   * @intent  One pair of tokens per state; the light/dark strategy switch
+   *          already happened once in the CONTEXT layer. `-accent` (the
+   *          dot marker outside the badge) stays theme-invariant and reads
+   *          straight off the same channel primitive used for dark-mode
+   *          text and background — one value, three consumers.
+   */
+  --status-pending-bg: var(--ctx-status-pending-bg);
+  --status-pending-text: var(--ctx-status-pending-text);
+  --status-pending-accent: rgb(var(--p-amber-rgb));
+
+  --status-paid-bg: var(--ctx-status-paid-bg);
+  --status-paid-text: var(--ctx-status-paid-text);
+  --status-paid-accent: rgb(var(--p-teal-rgb));
+
+  --status-shipped-bg: var(--ctx-status-shipped-bg);
+  --status-shipped-text: var(--ctx-status-shipped-text);
+  --status-shipped-accent: rgb(var(--p-violet-rgb));
+
+  --status-delivered-bg: var(--ctx-status-delivered-bg);
+  --status-delivered-text: var(--ctx-status-delivered-text);
+  --status-delivered-accent: rgb(var(--p-green-rgb));
+
+  --status-cancelled-bg: var(--ctx-status-cancelled-bg);
+  --status-cancelled-text: var(--ctx-status-cancelled-text);
+  --status-cancelled-accent: rgb(var(--p-red-rgb));
+
+  --status-refunded-bg: var(--ctx-status-refunded-bg);
+  --status-refunded-text: var(--ctx-status-refunded-text);
+  --status-refunded-accent: rgb(var(--p-rose-rgb));
+
+  /**
+   * @group   Spacing aliases
+   * @intent  Purpose-named spacing so layout code reads as intent
+   *          ("card padding") rather than as a magic ramp step.
+   */
+  --space-xs: var(--space-4);
+  --space-sm: var(--space-8);
+  --space-md: var(--space-12);
+  --space-lg: var(--space-16);
+  --space-xl: var(--space-24);
+  --space-card-padding: var(--space-24);
+  --space-layout-gap: var(--space-32);
+
+  /**
+   * @group   Typography aliases
+   * @intent  Semantic weight/size names mapped onto the H1 -> Caption
+   *          hierarchy. Theme-agnostic: typography does not change shape
+   *          between light and dark, only color (see --text-* above).
+   */
+  --font-family-base: var(--font-family-system);
+
+  --font-weight-regular: var(--font-weight-400);
+  --font-weight-medium: var(--font-weight-500);
+  --font-weight-bold: var(--font-weight-700);
+
+  --font-size-h1: var(--font-size-28);
+  --font-size-h2: var(--font-size-20);
+  --font-size-h3: var(--font-size-16);
+  --font-size-body: var(--font-size-14);
+  --font-size-caption: var(--font-size-12);
+
+  /**
+   * @group   Radius aliases
+   * @intent  Component-shape vocabulary. `--radius-input` and
+   *          `--radius-button` are kept as independent aliases on purpose
+   *          — they currently share a primitive but are free to diverge
+   *          the moment either component needs a different footprint.
+   */
+  --radius-badge: var(--radius-9999);
+  --radius-input: var(--radius-8);
+  --radius-button: var(--radius-8);
+  --radius-card: var(--radius-12);
+  --radius-avatar: var(--radius-9999);
+
+  /**
+   * @group   Elevation aliases
+   * @intent  `card` = low elevation for resting content; `overlay` = high
+   *          elevation for anything that floats above the page (modals,
+   *          popovers, dropdowns).
+   */
+  --shadow-card: var(--ctx-shadow-card);
+  --shadow-overlay: var(--ctx-shadow-overlay);
+}
+
+/* ==========================================================================
+   THEME ACTIVATION
+   --------------------------------------------------------------------------
+   The only place in the file that mentions "dark" as a trigger. Each rule
+   is a single property — the color-scheme flip — never a copy of the
+   palette itself.
+   ========================================================================== */
+
+:root {
+  color-scheme: light dark;
+}
+
+:root.theme-light {
+  color-scheme: light;
+}
+
+:root.theme-dark {
+  color-scheme: dark;
+}

@@ -1,5 +1,5 @@
 /**
- * Static mock-data generator (SPRINT 0.3).
+ * Static mock-data generato.
  *
  * Runs in plain Node via `npm run generate:data` (tsx). Nothing here is
  * imported by the client app — only domain *types* are pulled from

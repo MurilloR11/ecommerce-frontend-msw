@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from '@/app/App'
+import '@/shared/styles'
 import '@/app/styles/index.css'
 import { env } from '@/shared/config/env'
 
