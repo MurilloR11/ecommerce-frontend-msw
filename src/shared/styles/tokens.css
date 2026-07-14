@@ -177,6 +177,16 @@
   --radius-8: 8px;
   --radius-12: 12px;
   --radius-9999: 9999px;
+
+  /**
+   * @group   Motion scale
+   * @intent  One interaction-speed step and one settle step, plus a single
+   *          standard easing curve, so no component hand-writes a raw `ms`
+   *          or `cubic-bezier` value for transitions/slide animations.
+   */
+  --duration-150: 150ms;
+  --duration-200: 200ms;
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ==========================================================================
@@ -308,6 +318,18 @@
   --focus-ring: 0 0 0 3px var(--focus-ring-color);
 
   /**
+   * @group   Focus ring / double-ring variant
+   * @intent  A two-step halo (surface-colored gap + accent ring) for
+   *          controls where a single thin ring reads weakly — e.g. small
+   *          pill/circular controls sitting on a colored track. The gap
+   *          shadow separates the ring from the control's own fill so it
+   *          stays crisp instead of blending into an accent-colored
+   *          background.
+   */
+  --focus-ring-gap: 0 0 0 2px var(--surface-bg-app);
+  --focus-ring-double: var(--focus-ring-gap), 0 0 0 5px var(--focus-ring-color);
+
+  /**
    * @group   Status — order badges (6 lifecycle states)
    * @intent  One pair of tokens per state; the light/dark strategy switch
    *          already happened once in the CONTEXT layer. `-accent` (the
@@ -391,6 +413,17 @@
    */
   --shadow-card: var(--ctx-shadow-card);
   --shadow-overlay: var(--ctx-shadow-overlay);
+
+  /**
+   * @group   Motion aliases
+   * @intent  `interaction` = quick feedback (hover/press color or border
+   *          changes); `transform` = the slightly slower step used for
+   *          geometry changes (sliding a thumb, expanding a panel), where a
+   *          touch more time reads as smoother rather than laggy.
+   */
+  --motion-duration-interaction: var(--duration-150);
+  --motion-duration-transform: var(--duration-200);
+  --motion-easing-standard: var(--ease-standard);
 }
 
 /* ==========================================================================

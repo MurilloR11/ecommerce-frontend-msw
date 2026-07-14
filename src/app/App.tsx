@@ -1,12 +1,12 @@
 import { HomePage } from '@/pages/home'
 import { DesignSystemPage } from '@/pages/design-system'
+import { Layout } from '@/widgets/layout'
 
 function App() {
-  if (window.location.pathname === '/design-system') {
-    return <DesignSystemPage />
-  }
+  const page =
+    window.location.pathname === '/design-system' ? <DesignSystemPage /> : <HomePage />
 
-  return <HomePage />
+  return <Layout>{page}</Layout>
 }
 
 export default App

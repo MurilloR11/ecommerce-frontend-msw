@@ -1,0 +1,68 @@
+/**
+ * SegmentedControl - visual styles.
+ *
+ * Every color, spacing, radius, typography and motion value below is a
+ * reference to a global semantic design token (see
+ * src/shared/styles/tokens.css). No raw hex/rgb color or literal pixel
+ * size is written in this file.
+ */
+
+.group {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background-color: var(--surface-bg-app);
+  border-radius: var(--radius-badge);
+}
+
+.option {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-12);
+  border: none;
+  border-radius: var(--radius-badge);
+  background-color: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition:
+    background-color var(--motion-duration-interaction) var(--motion-easing-standard),
+    color var(--motion-duration-interaction) var(--motion-easing-standard);
+}
+
+.option:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.option.selected {
+  background-color: var(--accent-base);
+  color: var(--accent-fg);
+}
+
+.option:not(:disabled):not(.selected):hover {
+  color: var(--text-primary);
+}
+
+/**
+ * Anti-flash focus ring: a plain mouse-driven :focus gets no ring at all;
+ * only :focus-visible (keyboard navigation) renders the ring.
+ */
+.option:focus {
+  outline: none;
+}
+
+.option:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

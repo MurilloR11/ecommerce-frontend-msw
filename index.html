@@ -1,6 +1,99 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <script>
+      /**
+       * @fileoverview Synchronous, blocking theme-bootstrap script.
+       *
+       * @intent Executes as the very first statement in <head>, before any
+       *         stylesheet is applied and before the browser's first paint
+       *         (First Contentful Paint). This is the only point in the
+       *         Critical Rendering Path where the correct `.theme-light` /
+       *         `.theme-dark` class can be written to <html> in time —
+       *         tokens.css resolves `:root.theme-*` at first paint, so if
+       *         the class is missing or wrong at that moment the user sees
+       *         a Flash of Unstyled Content (FOUC): one theme flashing into
+       *         the other a frame later.
+       *
+       * @constraint Vanilla JS only, wrapped in an IIFE. No `defer`/`async`,
+       *             no framework or third-party dependency — React has not
+       *             mounted yet and this must not wait on it.
+       */
+      (function () {
+        'use strict';
+
+        /** @const {'light'|'dark'|'system'} Used whenever storage is empty, corrupted, or inaccessible. */
+        var DEFAULT_MODE = 'system';
+
+        /** @const {string} localStorage key the app's theme switcher persists to. */
+        var STORAGE_KEY = 'theme';
+
+        /**
+         * @function readStoredMode
+         * @intent Isolates the one fallible operation in this script.
+         *         `localStorage.getItem` can throw in strict incognito
+         *         sessions, when the user blocks cookies/site data, or when
+         *         storage quota is exhausted. Catching it here keeps a
+         *         storage failure from aborting head parsing and leaving
+         *         the page completely unstyled — a worse outcome than FOUC.
+         * @returns {string|null} Raw stored value, or null if absent/unreadable.
+         */
+        function readStoredMode() {
+          try {
+            return window.localStorage.getItem(STORAGE_KEY);
+          } catch (error) {
+            return null;
+          }
+        }
+
+        /**
+         * @function resolveMode
+         * @intent Never trusts disk content blindly. A stored value is only
+         *         honored if it matches exactly one of the three known
+         *         modes; anything else (missing key, corrupted/tampered
+         *         value, a string from a future app version) is treated as
+         *         absent and falls back to DEFAULT_MODE, so bad storage can
+         *         never crash the app or pin it to an invalid theme.
+         * @param {string|null} raw
+         * @returns {'light'|'dark'|'system'}
+         */
+        function resolveMode(raw) {
+          if (raw === 'light' || raw === 'dark' || raw === 'system') {
+            return raw;
+          }
+          return DEFAULT_MODE;
+        }
+
+        var mode = resolveMode(readStoredMode());
+
+        /**
+         * @intent Only 'light' and 'dark' are explicit user overrides and
+         *         get a class written. 'system' is intentionally left
+         *         class-less: tokens.css's base `:root { color-scheme:
+         *         light dark; }` already resolves every `light-dark()` call
+         *         against the OS preference natively, before first paint,
+         *         with no JS involved -- duplicating that with a computed
+         *         `matchMedia` class would be redundant AND destructive: it
+         *         would erase the distinction between "user chose dark" and
+         *         "user chose system, OS happens to be dark" once the class
+         *         is the only thing left on the DOM. The mode string in
+         *         localStorage stays the single source of truth for user
+         *         intent; this class is a one-way CSS activation switch,
+         *         never a place to read state back from.
+         *
+         *         Both classes are stripped before applying the resolved
+         *         one so `<html>` never carries a stale or conflicting
+         *         class from a previous session.
+         */
+        var root = document.documentElement;
+        root.classList.remove('theme-light', 'theme-dark');
+        if (mode === 'light') {
+          root.classList.add('theme-light');
+        } else if (mode === 'dark') {
+          root.classList.add('theme-dark');
+        }
+      })();
+    </script>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

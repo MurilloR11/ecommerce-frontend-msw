@@ -1,7 +1,3 @@
-import { useEffect, useState } from 'react'
-
-type ThemeMode = 'system' | 'light' | 'dark'
-
 const STATUSES = [
   { key: 'pending', label: 'Pending' },
   { key: 'paid', label: 'Paid' },
@@ -20,18 +16,6 @@ const TYPE_SCALE = [
 ] as const
 
 function DesignSystemPage() {
-  const [mode, setMode] = useState<ThemeMode>('system')
-
-  useEffect(() => {
-    const root = document.documentElement
-    root.classList.remove('theme-light', 'theme-dark')
-    if (mode === 'light') root.classList.add('theme-light')
-    if (mode === 'dark') root.classList.add('theme-dark')
-    return () => {
-      root.classList.remove('theme-light', 'theme-dark')
-    }
-  }, [mode])
-
   return (
     <div className="ds">
       <style>{`
@@ -62,33 +46,6 @@ function DesignSystemPage() {
           font-size: var(--font-size-body);
           color: var(--text-secondary);
           margin: 0;
-        }
-        .ds-mode-switch {
-          display: inline-flex;
-          gap: var(--space-xs);
-          padding: var(--space-xs);
-          background: var(--surface-bg-panel);
-          border: 1px solid var(--border-subtle);
-          border-radius: var(--radius-button);
-        }
-        .ds-mode-btn {
-          font-family: var(--font-family-base);
-          font-size: var(--font-size-caption);
-          font-weight: var(--font-weight-medium);
-          padding: var(--space-xs) var(--space-sm);
-          border-radius: var(--radius-button);
-          border: 1px solid transparent;
-          background: transparent;
-          color: var(--text-secondary);
-          cursor: pointer;
-        }
-        .ds-mode-btn[data-active='true'] {
-          background: var(--accent-base);
-          color: var(--accent-fg);
-        }
-        .ds-mode-btn:focus-visible {
-          outline: none;
-          box-shadow: var(--focus-ring);
         }
         .ds-section {
           margin-bottom: var(--space-xl);
@@ -243,21 +200,6 @@ function DesignSystemPage() {
         <div>
           <p className="ds-title">Design System</p>
           <p className="ds-subtitle">Live reference for every token in src/shared/styles/tokens.css</p>
-        </div>
-        <div className="ds-mode-switch" role="group" aria-label="Theme mode">
-          {(['system', 'light', 'dark'] as const).map((option) => (
-            <button
-              key={option}
-              type="button"
-              className="ds-mode-btn"
-              data-active={mode === option}
-              onClick={() => {
-                setMode(option)
-              }}
-            >
-              {option.charAt(0).toUpperCase() + option.slice(1)}
-            </button>
-          ))}
         </div>
       </header>
 
